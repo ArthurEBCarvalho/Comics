@@ -67,11 +67,13 @@ RSpec.describe Marvel::Fetch do
         }
       end
 
+      it { is_expected.to eq [{ 'id' => 1 }] }
+
       describe 'validate what was run' do
         before { subject }
   
-        it { expect(Faraday).to have_received(:get).with("https://gateway.marvel.com:443/v1/public/comics", comics_params, headers).once }
         it { expect(Faraday).to have_received(:get).with("https://gateway.marvel.com:443/v1/public/characters", characters_params, headers).once }
+        it { expect(Faraday).to have_received(:get).with("https://gateway.marvel.com:443/v1/public/comics", comics_params, headers).once }
       end
     end
   end
