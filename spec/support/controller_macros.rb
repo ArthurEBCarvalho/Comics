@@ -1,5 +1,5 @@
 module ControllerMacros
-  def login
+  def login_user
     before(:each) do
       @request.env['devise.mapping'] = Devise.mappings[:user]
       sign_in FactoryBot.create(:user)
