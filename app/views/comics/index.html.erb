@@ -1,0 +1,36 @@
+<div id='topbar'>
+  <div class="row">
+    <div class="col-md-12">
+      <%= image_tag 'marvel_logo.png', id: :logo %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <%= form_tag({}) do %>
+      <div class="input-group">
+            <%= text_field_tag :character, params[:character], class: 'form-control', placeholder: 'Characters...' %>
+            <span class="input-group-btn">
+              <%= submit_tag 'Search', class: 'btn btn-success btn-group', name: :submit %>
+            </span>
+          </div>
+          <div class="col-md-4"></div>
+      </div>
+      <% end %>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <% @comics.each do |comic| %>
+    <div class="col-md-2 comic-card" style="background-image: url('<%= comic['thumbnail']['path'] %>.<%= comic['thumbnail']['extension'] %>');">
+      
+      <div class="info">
+        <p><%= comic['title'] %></p>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div>
