@@ -21,7 +21,9 @@ RSpec.describe Marvel::Fetch do
         ts:      '1',
         apikey:  ENV['MARVEL_PUBLIC_KEY'],
         hash:    Digest::MD5.hexdigest("1#{ENV['MARVEL_PRIVATE_KEY']}#{ENV['MARVEL_PUBLIC_KEY']}"),
-        orderBy: 'focDate'
+        orderBy: 'focDate',
+        limit:   20,
+        offset:  0
       }
     end
 
@@ -45,7 +47,7 @@ RSpec.describe Marvel::Fetch do
     end
 
     context 'when has character_name param' do
-      subject { described_class.comics('Deadpool') }
+      subject { described_class.comics(character_name: 'Deadpool') }
 
       let(:endpoint) { '/characters' }
       let(:results) { [{ id: 1 }] }
@@ -55,15 +57,19 @@ RSpec.describe Marvel::Fetch do
           apikey:     ENV['MARVEL_PUBLIC_KEY'],
           hash:       Digest::MD5.hexdigest("1#{ENV['MARVEL_PRIVATE_KEY']}#{ENV['MARVEL_PUBLIC_KEY']}"),
           orderBy:    'focDate',
-          characters: 1
+          characters: 1,
+          limit:      20,
+          offset:     0
         }
       end
       let(:characters_params) do
         {
-          ts:     '1',
-          apikey: ENV['MARVEL_PUBLIC_KEY'],
-          hash:   Digest::MD5.hexdigest("1#{ENV['MARVEL_PRIVATE_KEY']}#{ENV['MARVEL_PUBLIC_KEY']}"),
-          name:   'Deadpool'
+          ts:      '1',
+          apikey:  ENV['MARVEL_PUBLIC_KEY'],
+          hash:    Digest::MD5.hexdigest("1#{ENV['MARVEL_PRIVATE_KEY']}#{ENV['MARVEL_PUBLIC_KEY']}"),
+          name:    'Deadpool',
+          limit:   1,
+          offset:  0
         }
       end
 
@@ -74,6 +80,44 @@ RSpec.describe Marvel::Fetch do
   
         it { expect(Faraday).to have_received(:get).with("https://gateway.marvel.com:443/v1/public/characters", characters_params, headers).once }
         it { expect(Faraday).to have_received(:get).with("https://gateway.marvel.com:443/v1/public/comics", comics_params, headers).once }
+      end
+    end
+
+    context 'when has page param' do
+      subject { described_class.comics(page: page) }
+
+      let(:comics_params) do
+        {
+          ts:       '1',
+          apikey:   ENV['MARVEL_PUBLIC_KEY'],
+          hash:     Digest::MD5.hexdigest("1#{ENV['MARVEL_PRIVATE_KEY']}#{ENV['MARVEL_PUBLIC_KEY']}"),
+          orderBy:  'focDate',
+          limit:    20,
+          offset:   offset
+        }
+      end
+
+      before { subject }
+
+      context 'when page is 0' do
+        let(:page) { '0' }
+        let(:offset) { 0 }
+
+        it { expect(Faraday).to have_received(:get).with(url, comics_params, headers).once }
+      end
+
+      context 'when page is 0' do
+        let(:page) { '1' }
+        let(:offset) { 0 }
+
+        it { expect(Faraday).to have_received(:get).with(url, comics_params, headers).once }
+      end
+
+      context 'when page is 2 or more' do
+        let(:page) { '2' }
+        let(:offset) { 20 }
+
+        it { expect(Faraday).to have_received(:get).with(url, comics_params, headers).once }
       end
     end
   end

@@ -7,7 +7,7 @@
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <%= form_tag({}) do %>
+      <%= form_tag({}, method: :get) do %>
       <div class="input-group">
             <%= text_field_tag :character, params[:character], class: 'form-control', placeholder: 'Characters...' %>
             <span class="input-group-btn">
@@ -32,5 +32,16 @@
       </div>
     </div>
     <% end %>
+  </div>
+
+  <div class="row pagination">
+    <div class="col-md-6">
+      <% if params[:page].to_i > 1 %>
+        <%= link_to 'PREVIOUS PAGE', root_path(page: (params[:page] || 1).to_i - 1, character: params[:character]), class: 'btn btn-default' %>
+      <%- end %>
+    </div>
+    <div class="col-md-6">
+      <%= link_to 'NEXT PAGE', root_path(page: (params[:page] || 1).to_i + 1, character: params[:character]), class: 'btn btn-default pull-right' %>
+    </div>
   </div>
 </div>

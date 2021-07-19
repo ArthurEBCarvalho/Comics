@@ -46,3 +46,13 @@ body {
 .comic-card:hover .info {
   display: block;
 }
+
+.pagination {
+  width: 100%;
+}
+
+.pagination .btn {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: red;
+}

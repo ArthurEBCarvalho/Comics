@@ -4,13 +4,14 @@ module Marvel
     MARVEL_PUBLIC_KEY  = ENV.fetch('MARVEL_PUBLIC_KEY', '')
     MARVEL_PRIVATE_KEY = ENV.fetch('MARVEL_PRIVATE_KEY', '')
     TIMESTAMP          = '1'
+    PER_PAGE           = 20
 
     class << self
-      def comics(character_name = nil)
+      def comics(character_name: nil, page: 1)
         response = if character_name.present?
-                     Faraday.get(url('/comics'), params({ orderBy: 'focDate', characters: fetch_character_id(character_name) }), headers)
+                     Faraday.get(url('/comics'), params(page, orderBy: 'focDate', characters: fetch_character_id(character_name)), headers)
                    else
-                     Faraday.get(url('/comics'), params({ orderBy: 'focDate' }), headers)
+                     Faraday.get(url('/comics'), params(page, orderBy: 'focDate'), headers)
                    end
         
         raise_error(response) unless response.status.between?(200, 299)
@@ -23,7 +24,7 @@ module Marvel
       private
 
       def fetch_character_id(character_name)
-        response = Faraday.get(url('/characters'), params({ name: character_name }), headers)
+        response = Faraday.get(url('/characters'), params(1, { name: character_name, limit: 1 }), headers)
         raise_error(response) unless response.status.between?(200, 299)
 
         JSON.parse(response.body).dig('data', 'results', 0, 'id')
@@ -40,12 +41,12 @@ module Marvel
         }
       end
 
-      def params(params = {})
+      def params(page, params = {})
         {
           ts:     TIMESTAMP,
           apikey: MARVEL_PUBLIC_KEY,
           hash:   Digest::MD5.hexdigest("#{TIMESTAMP}#{MARVEL_PRIVATE_KEY}#{MARVEL_PUBLIC_KEY}")
-        }.merge(params)
+        }.merge(pagination(page)).merge(params)
       end
       
       def raise_error(response)
@@ -53,6 +54,13 @@ module Marvel
         error_message = data.dig('error') || data.dig('errors')
 
         raise Marvel::RequestError.new(error_message, status: response.status)
+      end
+
+      def pagination(page)
+        offset = (page.to_i - 1) * PER_PAGE
+        offset = 0 if offset.negative?
+
+        { limit: PER_PAGE, offset: offset }
       end
     end
   end
