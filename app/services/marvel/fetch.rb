@@ -58,7 +58,7 @@ module Marvel
       end
 
       def pagination(page)
-        offset = (page - 1) * PER_PAGE
+        offset = (page.to_i - 1) * PER_PAGE
         offset = 0 if offset.negative?
 
         { limit: PER_PAGE, offset: offset }

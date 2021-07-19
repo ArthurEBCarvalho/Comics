@@ -101,21 +101,21 @@ RSpec.describe Marvel::Fetch do
       before { subject }
 
       context 'when page is 0' do
-        let(:page) { 0 }
+        let(:page) { '0' }
         let(:offset) { 0 }
 
         it { expect(Faraday).to have_received(:get).with(url, comics_params, headers).once }
       end
 
       context 'when page is 0' do
-        let(:page) { 1 }
+        let(:page) { '1' }
         let(:offset) { 0 }
 
         it { expect(Faraday).to have_received(:get).with(url, comics_params, headers).once }
       end
 
       context 'when page is 2 or more' do
-        let(:page) { 2 }
+        let(:page) { '2' }
         let(:offset) { 20 }
 
         it { expect(Faraday).to have_received(:get).with(url, comics_params, headers).once }
