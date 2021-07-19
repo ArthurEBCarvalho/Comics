@@ -9,9 +9,9 @@ module Marvel
     class << self
       def comics(character_name: nil, page: 1)
         response = if character_name.present?
-                     Faraday.get(url('/comics'), params(page, characters: fetch_character_id(character_name)), headers)
+                     Faraday.get(url('/comics'), params(page, orderBy: 'focDate', characters: fetch_character_id(character_name)), headers)
                    else
-                     Faraday.get(url('/comics'), params(page), headers)
+                     Faraday.get(url('/comics'), params(page, orderBy: 'focDate'), headers)
                    end
         
         raise_error(response) unless response.status.between?(200, 299)
@@ -45,8 +45,7 @@ module Marvel
         {
           ts:     TIMESTAMP,
           apikey: MARVEL_PUBLIC_KEY,
-          hash:   Digest::MD5.hexdigest("#{TIMESTAMP}#{MARVEL_PRIVATE_KEY}#{MARVEL_PUBLIC_KEY}"),
-          orderBy: 'focDate'
+          hash:   Digest::MD5.hexdigest("#{TIMESTAMP}#{MARVEL_PRIVATE_KEY}#{MARVEL_PUBLIC_KEY}")
         }.merge(pagination(page)).merge(params)
       end
       

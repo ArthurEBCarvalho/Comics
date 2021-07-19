@@ -67,7 +67,6 @@ RSpec.describe Marvel::Fetch do
           ts:      '1',
           apikey:  ENV['MARVEL_PUBLIC_KEY'],
           hash:    Digest::MD5.hexdigest("1#{ENV['MARVEL_PRIVATE_KEY']}#{ENV['MARVEL_PUBLIC_KEY']}"),
-          orderBy: 'focDate',
           name:    'Deadpool',
           limit:   1,
           offset:  0
