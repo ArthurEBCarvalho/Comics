@@ -1,15 +1,16 @@
 require 'rails_helper'
-require 'factories/users'
-require 'support/devise'
 
 RSpec.describe ComicsController, type: :controller do
   subject { response }
 
   let(:user) { create(:user) }
 
-  describe 'GET root' do
-    login_user
+  before do
+    @request.env['devise.mapping'] = Devise.mappings[:user]
+    sign_in user
+  end
 
+  describe 'GET root' do
     before { allow(Marvel::Fetch).to receive(:comics) }
 
     context 'when has not param' do
@@ -44,6 +45,54 @@ RSpec.describe ComicsController, type: :controller do
 
       it { is_expected.to have_http_status(:success) }
       it { expect(Marvel::Fetch).to have_received(:comics).with(character_name: 'Deadpool', page: '2') }
+    end
+  end
+
+  describe 'GET /add_favorite' do
+    let(:comic_id) { 1 }
+
+    before do
+      request.env["HTTP_ACCEPT"] = 'application/json'
+      get :add_favorite, params: { comic_id: comic_id }
+    end
+
+    it { is_expected.to have_http_status(:success) }
+    it { expect(user.reload.favorite_comics_ids).to eq [1] }
+
+    context 'when has not param comic_id' do
+      let(:comic_id) { nil }
+
+      it { is_expected.to have_http_status(:not_acceptable) }
+      it { expect(response.body).to eq({ 'message' => 'Param comic_id is required' }.to_json) }
+      it { expect(user.reload.favorite_comics_ids).to be_empty }
+    end
+  end
+
+  describe 'GET /remove_favorite' do
+    let(:user) { create(:user, favorite_comics_ids: [1]) }
+    let(:comic_id) { 1 }
+
+    before do
+      request.env["HTTP_ACCEPT"] = 'application/json'
+      get :remove_favorite, params: { comic_id: comic_id }
+    end
+
+    it { is_expected.to have_http_status(:no_content) }
+    it { expect(user.reload.favorite_comics_ids).to be_empty }
+
+    context 'when user has not comic_id as favorite' do
+      let(:comic_id) { 2 }
+
+      it { is_expected.to have_http_status(:no_content) }
+      it { expect(user.reload.favorite_comics_ids).to eq [1] }
+    end
+
+    context 'when has not param comic_id' do
+      let(:comic_id) { nil }
+
+      it { is_expected.to have_http_status(:not_acceptable) }
+      it { expect(response.body).to eq({ 'message' => 'Param comic_id is required' }.to_json) }
+      it { expect(user.reload.favorite_comics_ids).to eq [1] }
     end
   end
 end
