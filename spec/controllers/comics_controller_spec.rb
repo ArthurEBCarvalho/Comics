@@ -58,6 +58,14 @@ RSpec.describe ComicsController, type: :controller do
 
     it { is_expected.to have_http_status(:success) }
     it { expect(user.reload.favorite_comics_ids).to eq [1] }
+    
+    context 'when user already has the comic_id as a favorite' do
+      let(:user) { create(:user, favorite_comics_ids: [1]) }
+
+      it { is_expected.to have_http_status(:not_acceptable) }
+      it { expect(response.body).to eq({ 'message' => 'You already has this comic as a favorite' }.to_json) }
+      it { expect(user.reload.favorite_comics_ids).to eq [1] }
+    end
 
     context 'when has not param comic_id' do
       let(:comic_id) { nil }
@@ -83,7 +91,8 @@ RSpec.describe ComicsController, type: :controller do
     context 'when user has not comic_id as favorite' do
       let(:comic_id) { 2 }
 
-      it { is_expected.to have_http_status(:no_content) }
+      it { is_expected.to have_http_status(:not_acceptable) }
+      it { expect(response.body).to eq({ 'message' => 'You has not this comic as a favorite' }.to_json) }
       it { expect(user.reload.favorite_comics_ids).to eq [1] }
     end
 

@@ -6,7 +6,8 @@ class ComicsController < ApplicationController
   end
 
   def add_favorite
-    return not_acceptable if comic_params[:comic_id].blank?
+    return not_acceptable('Param comic_id is required') if comic_params[:comic_id].blank?
+    return not_acceptable('You already has this comic as a favorite') if current_user.favorite_comics_ids.include?(comic_params[:comic_id].to_i)
 
     current_user.favorite_comics_ids << comic_params[:comic_id].to_i
     current_user.save!
@@ -15,7 +16,8 @@ class ComicsController < ApplicationController
   end
 
   def remove_favorite
-    return not_acceptable if comic_params[:comic_id].blank?
+    return not_acceptable('Param comic_id is required') if comic_params[:comic_id].blank?
+    return not_acceptable('You has not this comic as a favorite') unless current_user.favorite_comics_ids.include?(comic_params[:comic_id].to_i)
 
     current_user.favorite_comics_ids.delete(comic_params[:comic_id].to_i)
     current_user.save!
@@ -33,7 +35,7 @@ class ComicsController < ApplicationController
     { character_name: comic_params[:character], page: comic_params[:page] }.compact
   end
 
-  def not_acceptable
-    render status: :not_acceptable, json: { message: 'Param comic_id is required' }  
+  def not_acceptable(error_message)
+    render status: :not_acceptable, json: { message: error_message }
   end
 end
