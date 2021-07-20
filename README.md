@@ -1,47 +1,33 @@
-# README
+# Comics
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Comics is a Ruby on Rails app that connects with [Marvel API](https://developer.marvel.com/) to get the comics, can filter by character and also bookmark a comic.
+This app was made in `ruby 2.5.7` and `rails 5.1.7`.
 
-Things you may want to cover:
+## Services
 
-* Ruby version
+Comics uses the following gems:
+* [Rspec Rails](https://github.com/rspec/rspec-rails)
+* [Faraday](https://github.com/lostisland/faraday)
+* [Devise](https://github.com/heartcombo/devise)
+* [FactoryBot](https://github.com/thoughtbot/factory_bot)
+* [Pry Rails](https://github.com/rweng/pry-rails)
+* [Dotenv](https://github.com/rweng/pry-rails)
 
-* System dependencies
+## Instalation
 
-* Configuration
+Run the following commands to start this app localy:
+* `bundle install` to install the gems;
+* `rake db:setup` to create the database;
+* `rake db:migrate` to create the tables on database;
+* `rails s` to start the server localy.
 
-* Database creation
+Now, you have to access `localhost:3000` on browser, create you user and enjoy the Marvel comics.
 
-* Database initialization
+## Comments:
 
-* How to run the test suite
+The app is considering the Marvel API to be reliable and immutable. If you could not consider this, it would be necessary to create the comics and characters data in the system database.
+If I had more time, I could make the following improvements: 
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-1. gems:
-1.1. rspec
-1.2. faraday
-1.3. devise
-1.4. factorybot
-1.5. ruby 2.5.7
-1.6. rails 5.1.7
-1.7. pry
-1.8. dotenv
-
-2. Run project:
-2.1. bundle install
-2.2. rake db:setup
-2.3. rake db:migrate
-
-3. Observações:
-3.1. O sistema está considerando que a API é confiável e imutável. Caso não pudesse considerar isso, seria necessário criar os dados de comics e characters no banco do sistema.
-3.2. Aplicar o Rubocop como actions
-3.3. Se precisar acessar mais APIs, poderia fazer um base service do faraday
-3.4. CI com Rspec
-3.5. Ajustar a tela de login 
-3.6. Deixar o layout responsivo
+* Github actions with Rubocop and Rspec
+* Login page
+* Responsive layout
