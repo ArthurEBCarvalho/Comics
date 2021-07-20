@@ -43,6 +43,10 @@ body {
   margin: 0;
 }
 
+.comic-card .favorite-icon {
+  margin: 5px;
+}
+
 .comic-card:hover .info {
   display: block;
 }

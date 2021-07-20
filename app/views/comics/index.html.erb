@@ -26,7 +26,11 @@
   <div class="row">
     <% @comics.each do |comic| %>
     <div class="col-md-2 comic-card" style="background-image: url('<%= comic['thumbnail']['path'] %>.<%= comic['thumbnail']['extension'] %>');">
-      
+      <% if current_user.favorite_comics_ids.include?(comic['id']) %>
+        <%= image_tag 'heart_on.png', class: 'favorite-icon', 'data-favorite': true, 'data-comic-id': comic['id'] %>
+      <%- else %>
+        <%= image_tag 'heart_off.png', class: 'favorite-icon', 'data-favorite': false, 'data-comic-id': comic['id'] %>
+      <%- end %>
       <div class="info">
         <p><%= comic['title'] %></p>
       </div>
@@ -45,3 +49,47 @@
     </div>
   </div>
 </div>
+
+<script>
+  // change icon when favorite icon is hover
+  $('.favorite-icon').hover(
+    function() {
+      $(this).attr('src', '/assets/heart_hover.png');
+    }, function() {
+      if($(this).attr('data-favorite') == 'true')
+        var src = '/assets/heart_on.png';
+      else
+        var src = '/assets/heart_off.png';
+
+      $(this).attr('src', src);
+    }
+  );
+
+  $('.favorite-icon').click(function(){
+    var favorite = $(this);
+
+    if($(favorite).attr('data-favorite') == 'true'){
+      var action = 'remove';
+      var src = '/assets/heart_off.png';
+    } else {
+      var action = 'add';
+      var src = '/assets/heart_on.png';
+    }
+
+    $.ajax({
+      url: `${action}_favorite?comic_id=${favorite.attr('data-comic-id')}`,
+      type: 'get'
+    }).done(function(msg){
+      if($(favorite).attr('data-favorite') == 'true'){
+        $(favorite).attr('data-favorite', false);
+        $(favorite).attr('src', src);
+      } else {
+        $(favorite).attr('data-favorite', true);
+        $(favorite).attr('src', src);
+      }
+    }).fail(function(jqXHR, textStatus, msg){
+      alert('ERROR');
+      alert(`An error has occurred: ${jqXHR.responseJSON.message}`)
+    });
+  });
+</script>
